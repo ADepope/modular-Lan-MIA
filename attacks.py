@@ -59,13 +59,19 @@ class attack:
 
         if self.attack_name == 'prediction_loss_based_mia':
 
+            # find average loss over iterations and over samples
             # log_history = trainer.state.log_history
             # training_loss = [entry['loss'] for entry in log_history if 'loss' in entry]
             # training_loss_mean = np.mean(training_loss)
-            # print(trainer.state.log_history)
-            last_record = trainer.state.log_history[-1]
+
+            # find average loss over samples in last iteration
+            # last_record = trainer.state.log_history[-1]
             # print(last_record)
-            training_loss = last_record['train_loss']
+            # training_loss = last_record['train_loss']
+
+            # evaluating the average training loss at last iteration
+            train_loss_result = trainer.evaluate(eval_dataset=trainer.train_dataset)
+            training_loss = train_loss_result.get("eval_loss", None)
 
             predictions = trainer.predict(attack_dataset)
 

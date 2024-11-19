@@ -17,7 +17,8 @@ parser.add_argument("-model_name", "--model-name", help = "name of the pretraine
 parser.add_argument("-max_sequence_length", "--max-sequence-length", help = "maximum sequence length", default = 512)
 parser.add_argument("-attack_name", "--attack-name", help = "name of an attack to be performed", default = "prediction_loss_based_mia")
 parser.add_argument("-num_trials", "--num-trials", help = "number of trials of an attack to be performed", default = 500)
-parser.add_argument("-num_epochs", "--num-epochs", help = "number of epochs in the fine-tuning of the model", default = 1)
+parser.add_argument("-num_epochs", "--num-epochs", help = "number of epochs in the fine-tuning of the model", default = 5)
+parser.add_argument("-load_model_dir", "--load-model-dir", help = "directory from which a trained model is loaded", default = None)
 args = parser.parse_args()
 
 dataset_name = args.dataset 
@@ -27,8 +28,17 @@ model_name = args.model_name
 max_sequence_length = int(args.max_sequence_length)
 attack_name = args.attack_name
 num_trials = int(args.num_trials)
-print(num_trials)
-num_epochs = int(args.num_epochs)
+# print(num_trials)
+num_epochs = float(args.num_epochs)
+load_model_dir = args.load_model_dir
+
+# dataset_name = "IMDb"
+# model_name = "roberta-base"
+# max_sequence_length = 512
+# attack_name = "prediction_loss_based_mia"
+# num_trials = 500
+# load_model_dir = None
+# num_epochs = 1
 
 print("..loading dataset")
 #### loading a dataset
@@ -41,10 +51,10 @@ print("..fine-mapping of pretrained NLP model")
 # max_sequence_length = 512
 log_dir = '/nfs/scistore17/robingrp/adepope/DataExtractionAttacks/logfiles'
 output_dir = '/nfs/scistore17/robingrp/adepope/DataExtractionAttacks/output'
-wmodel = pretrained_models(model_name, max_sequence_length, output_dir, log_dir)
+wmodel = pretrained_models(model_name, max_sequence_length, output_dir, log_dir, load_model_dir)
 trainer, train_data, test_data = wmodel.fine_tune(train_data, test_data, num_epochs)
 
-print("..performing attacks")
+print(f"..performing attack {attack_name}")
 #### performing an attack
 # attack_name = 'prediction_loss_based_mia'
 # num_trials = 500

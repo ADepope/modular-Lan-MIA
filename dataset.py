@@ -12,29 +12,20 @@ class dataset:
 
             if self.dataset_name == 'IMDb':
 
-                train_data, test_data = datasets.load_dataset('imdb', split =['train', 'test'])
-    
+                self.dataset_name_internal = 'imdb'
+
+            elif self.dataset_name == 'Yelp':
+
+                self.dataset_name_internal = 'yelp_review_full'
+                
             else:
-    
-                print(dataset_name + " dataset is not available!")
+                
+                raise ValueError(f"{self.dataset_name} dataset is not available!")
+
+            train_data, test_data = datasets.load_dataset(self.dataset_name_internal, split =['train', 'test'])
 
             return train_data, test_data
+            
                 
-        # def fetch_tokens(self):    
-        #     tokens = []
-        #     if self.dataset_name == 'IMDb':
-        #         train_iter = IMDB(split='train')
-                
-        #         def tokenize(label, line):
-        #             return line.split()
-                
-        #         for label, line in train_iter:
-        #             tokens += tokenize(label, line)
-    
-        #     else:
-    
-        #         print(dataset_name + " dataset is not available!")
-    
-        #     return tokens
                 
         

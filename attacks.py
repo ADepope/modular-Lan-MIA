@@ -53,15 +53,20 @@ class attack:
 
     def perform_attack(self, trainer, train_data, test_data):
 
+        shf_train_data = train_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
+        shf_test_data = test_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
+        attack_dataset = datasets.concatenate_datasets([shf_train_data, shf_test_data])
+
         if self.attack_name == 'prediction_loss_based_mia':
 
-            log_history = trainer.state.log_history
-            training_loss = [entry['loss'] for entry in log_history if 'loss' in entry]
-            training_loss_mean = np.mean(training_loss)
+            # log_history = trainer.state.log_history
+            # training_loss = [entry['loss'] for entry in log_history if 'loss' in entry]
+            # training_loss_mean = np.mean(training_loss)
+            # print(trainer.state.log_history)
+            last_record = trainer.state.log_history[-1]
+            # print(last_record)
+            training_loss = last_record['train_loss']
 
-            shf_train_data = train_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
-            shf_test_data = test_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
-            attack_dataset = datasets.concatenate_datasets([shf_train_data, shf_test_data])
             predictions = trainer.predict(attack_dataset)
 
             # makes sense for classification tasks only
@@ -73,14 +78,27 @@ class attack:
 
             # calculate per-sample loss
             per_sample_loss = criterion(logits_tensor, labels_tensor)
-            membership_pred = (per_sample_loss < training_loss_mean).int()
+            membership_pred = (per_sample_loss < training_loss).int()
             membership_true = torch.cat((torch.ones(self.num_trials_per_cat), torch.zeros(self.num_trials_per_cat)))
             self.mia_metrics = self.calculate_mia_metrics(membership_true, membership_pred)
             self.print_mia_metrics()
 
-        else:
+        elif self.attack_name == 'prediction_correctness_based_mia':
 
-            print("Invalid attack was chosen!")
+            predictions_output = trainer.predict(attack_dataset)
+            predictions = predictions_output.predictions
+            label_ids = predictions_output.label_ids
+            predicted_labels = np.argmax(predictions, axis=1)
+            membership_pred = torch.tensor( (predicted_labels == label_ids).astype(int) )
+            membership_true = torch.cat((torch.ones(self.num_trials_per_cat), torch.zeros(self.num_trials_per_cat)))
+            self.mia_metrics = self.calculate_mia_metrics(membership_true, membership_pred)
+            self.print_mia_metrics()
+        
+
+        else:
+    
+            raise ValueError("Invalid attack was chosen!")
+
 
         return self.mia_metrics
 

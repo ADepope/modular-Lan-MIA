@@ -104,7 +104,7 @@ class pretrained_models:
             )
     
             trainer = transformers.Trainer(
-                model=model,
+                model=self.model,
                 args=training_args,
                 compute_metrics=self.compute_metrics,
                 train_dataset=train_data,
@@ -113,7 +113,7 @@ class pretrained_models:
     
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
             print(f"device = {device}")
-            model.to(device)
+            self.model.to(device)
     
             train_res = trainer.train()
             print("..train ended")

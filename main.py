@@ -11,13 +11,13 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 # Parsing input arguments and initilizing variables
 parser = argparse.ArgumentParser()
-parser.add_argument("-dataset", "--dataset", help = "specify a dataset on which an attack is to be performed", default = "IMDb")
+parser.add_argument("-dataset", "--dataset", help = "specifies a dataset on which an attack is to be performed", default = "IMDb")
 parser.add_argument("-torch_num_threads", "--torch-num-threads", help = "number of CPU threads PyTorch uses for parallel operations", default = 1)
 parser.add_argument("-model_name", "--model-name", help = "name of the pretrained NLP model", default = "roberta-base")
 parser.add_argument("-max_sequence_length", "--max-sequence-length", help = "maximum sequence length", default = 512)
 parser.add_argument("-attack_name", "--attack-name", help = "name of an attack to be performed", default = "prediction_loss_based_mia")
 parser.add_argument("-num_trials", "--num-trials", help = "number of trials of an attack to be performed", default = 500)
-parser.add_argument("-num_epochs", "--num-epochs", help = "number of epochs in the fine-tuning of the model", default = 5)
+parser.add_argument("-num_epochs", "--num-epochs", help = "number of epochs used in the fine-tuning of the model", default = 5)
 parser.add_argument("-load_model_dir", "--load-model-dir", help = "directory from which a trained model is loaded", default = None)
 args = parser.parse_args()
 

@@ -39,7 +39,7 @@ python3 main.py --dataset IMDb --num-epochs 10 --attack-name prediction_loss_bas
 | `--max-sequence-length` | maximum sequence length | 512 |
 | `--torch-num-threads` | number of CPU threads PyTorch uses for parallel operations | 1 |
 
-# Evaluation metric 
+# Evaluation metrics
 
 Once {num-trials} attacks are performed we summarize theit effectivness through the following evaluation metrics:
 - Accuracy
@@ -48,4 +48,25 @@ Once {num-trials} attacks are performed we summarize theit effectivness through 
 - F1
 - FPR
 - Advantage
+
+# Covered datasets
+| Dataset | Description |
+| --- | --- |
+| `IMDb` | IMDb dataset contains 50,000 movie reviews labeled as either positive or negative. The dataset is balanced, with an equal number of positive and negative reviews. It is divided into 25,000 reviews for training and 25,000 for testing. |
+| `Yelp` | The Yelp Review Full Dataset is a text classification dataset that consists of 700,000 reviews from the Yelp website. Reviews are labeled with one of five possible star ratings (1 to 5), representing sentiments from Very negative (1) to Very positive (5). It is divided into 650,000 reviews for training and 50,000 for testing. 
+
+# Covered NLP models
+| Model name | Description |
+| --- | --- |
+| `roberta-base` | RoBERTa-base model is a pre-trained transformer model designed for natural language understanding tasks. It builds on BERT by using larger datasets, training for longer time, removing next-sentence prediction objective and by training with dynamic masking.
+
+# Covered attacks
+| Attack name | Keyword | Description |
+| --- | --- | --- | 
+| Prediction Correctness Based MIA | `prediction_correctness_based_mia` | An attacker infers an input record as a member if it is correctly predicted by the target model, otherwise the attacker infers it as a non-member.  |
+| Prediction Loss Based MIA | `prediction_loss_based_mia` | An attacker infers an input record as a member if its prediction loss is smaller than the average loss of all training members, otherwise the attacker infers it as a nonmember. |
+
+
+
+
             

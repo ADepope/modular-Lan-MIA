@@ -65,6 +65,8 @@ Once {num-trials} attacks are performed we summarize theit effectivness through 
 | --- | --- | --- | 
 | Prediction Correctness Based MIA | `prediction_correctness_based_mia` | An attacker infers an input record as a member if it is correctly predicted by the target model, otherwise the attacker infers it as a non-member.  |
 | Prediction Loss Based MIA | `prediction_loss_based_mia` | An attacker infers an input record as a member if its prediction loss is smaller than the average loss of all training members, otherwise the attacker infers it as a nonmember. |
+| Prediction Confidence Based MIA | `prediction_confidence_based_mia` | An attacker infers an input record as a member if its maximum prediction confidence is larger than a preset threshold, otherwise the attacker infers it as a non-member |
+
 
 
 

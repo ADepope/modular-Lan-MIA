@@ -51,11 +51,13 @@ class attack:
             print(f"{metric}: {value:.4f}")
 
 
-    def perform_attack(self, trainer, train_data, test_data):
+    def perform_attack(self, trainer, train_data, test_data, hyperpar={'confidence_thr': 0.9}):
 
+        # hyperpar is a dictionary containing additional parameters required to performa MIAs such as thresold values and other
         shf_train_data = train_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
         shf_test_data = test_data.shuffle(seed=42).select(range(self.num_trials_per_cat))
         attack_dataset = datasets.concatenate_datasets([shf_train_data, shf_test_data])
+        membership_true = torch.cat((torch.ones(self.num_trials_per_cat), torch.zeros(self.num_trials_per_cat)))
 
         if self.attack_name == 'prediction_loss_based_mia':
 
@@ -85,7 +87,6 @@ class attack:
             # calculate per-sample loss
             per_sample_loss = criterion(logits_tensor, labels_tensor)
             membership_pred = (per_sample_loss < training_loss).int()
-            membership_true = torch.cat((torch.ones(self.num_trials_per_cat), torch.zeros(self.num_trials_per_cat)))
             self.mia_metrics = self.calculate_mia_metrics(membership_true, membership_pred)
             self.print_mia_metrics()
 
@@ -96,10 +97,18 @@ class attack:
             label_ids = predictions_output.label_ids
             predicted_labels = np.argmax(predictions, axis=1)
             membership_pred = torch.tensor( (predicted_labels == label_ids).astype(int) )
-            membership_true = torch.cat((torch.ones(self.num_trials_per_cat), torch.zeros(self.num_trials_per_cat)))
             self.mia_metrics = self.calculate_mia_metrics(membership_true, membership_pred)
             self.print_mia_metrics()
-        
+
+        elif self.attack_name == 'prediction_confidence_based_mia':
+
+            predictions_output = trainer.predict(attack_dataset)
+            predictions = predictions_output.predictions
+            probabilities = scipy.special.softmax(predictions, axis=1)
+            max_probabilities = np.max(probabilities, axis=1)
+            membership_pred = torch.tensor( (max_probabilities >= hyperpar['confidence_thr']).astype(int) )
+            self.mia_metrics = self.calculate_mia_metrics(membership_true, membership_pred)
+            self.print_mia_metrics()
 
         else:
     
